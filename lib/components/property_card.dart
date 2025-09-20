@@ -21,8 +21,12 @@ class PropertyCard extends StatelessWidget {
         width: 200,
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
+          border: Border.all(
+            color: const Color(0xFFF8F9FB),
+            width: 1.5,
+          ),
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
+          color: const Color(0xFFF8F9FB),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -67,6 +71,12 @@ class PropertyCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
+                        border: Border.all(
+                          color: property.isFavorite
+                              ? Colors.green
+                              : Colors.grey[300]!,
+                          width: 3,
+                        ),
                         color:
                             property.isFavorite ? Colors.green : Colors.white,
                         shape: BoxShape.circle,
@@ -118,7 +128,7 @@ class PropertyCard extends StatelessWidget {
                   Text(
                     property.title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                     ),
@@ -127,6 +137,8 @@ class PropertyCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Icon(Icons.star, size: 16, color: Colors.amber),
                       const SizedBox(width: 4),
@@ -138,11 +150,6 @@ class PropertyCard extends StatelessWidget {
                           color: Colors.black87,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
                       const Icon(Icons.location_on,
                           size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
@@ -159,6 +166,7 @@ class PropertyCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 4),
                   const SizedBox(height: 8),
                   Text(
                     property.price,
