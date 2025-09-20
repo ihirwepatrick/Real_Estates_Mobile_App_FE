@@ -185,14 +185,14 @@ class _HomePageState extends State<HomePage> {
                 const Text(
                   "Good Morning 👋",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 10,
                     color: Colors.grey,
                   ),
                 ),
                 const Text(
                   "Olivia Irwin",
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
@@ -200,11 +200,12 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+          const SizedBox(width: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.purple[50],
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.purple[200]!),
             ),
             child: Row(
@@ -286,8 +287,8 @@ class _HomePageState extends State<HomePage> {
               const Text(
                 "Featured Estates",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
                   color: Colors.black87,
                 ),
               ),
@@ -303,7 +304,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 280,
+            height: 220,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _featuredProperties.length,
@@ -348,8 +349,8 @@ class _HomePageState extends State<HomePage> {
               const Text(
                 "Top Locations",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
                   color: Colors.black87,
                 ),
               ),
@@ -394,10 +395,10 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Featured Estates",
+                "Estates Around",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
                   color: Colors.black87,
                 ),
               ),
@@ -421,7 +422,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 280,
+            height: 220,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _featuredProperties.length,
