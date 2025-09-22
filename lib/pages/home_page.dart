@@ -86,6 +86,18 @@ class _HomePageState extends State<HomePage> {
       imageUrl:
           "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=100",
     ),
+    Location(
+      id: "4",
+      name: "Nyarutarama",
+      imageUrl:
+          "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=100",
+    ),
+    Location(
+      id: "5",
+      name: "Kabuye",
+      imageUrl:
+          "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=100",
+    ),
   ];
 
   @override
