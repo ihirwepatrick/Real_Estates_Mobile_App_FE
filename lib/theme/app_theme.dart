@@ -40,7 +40,7 @@ class AppTheme {
           ),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.brand300))),
+              borderSide: BorderSide(color: AppColors.brand200))),
       cardTheme: CardTheme(
         color: const Color(0xFFF8F9FB),
         elevation: 0,
