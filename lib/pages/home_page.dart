@@ -105,20 +105,24 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              _buildUserGreeting(),
-              _buildSearchSection(),
-              _buildCategoriesSection(),
-              _buildFeaturedEstatesSection(),
-              _buildTopLocationsSection(),
-              _buildAroundEstatesSection(),
-              const SizedBox(height: 100), // Space for bottom nav
-            ],
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(),
+                _buildUserGreeting(),
+                _buildSearchSection(),
+                _buildCategoriesSection(),
+                _buildFeaturedEstatesSection(),
+                _buildTopLocationsSection(),
+                _buildAroundEstatesSection(),
+                const SizedBox(height: 100), // Space for bottom nav
+              ],
+            ),
           ),
         ),
       ),
@@ -188,7 +192,7 @@ class _HomePageState extends State<HomePage> {
             radius: 16,
             backgroundColor: Colors.grey[200],
             backgroundImage: const NetworkImage(
-              "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100",
+              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
             ),
           ),
           const SizedBox(width: 12),

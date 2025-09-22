@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final String hintText;
@@ -14,46 +15,37 @@ class CustomSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 16),
-          const Icon(Icons.search, color: Colors.grey, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: TextStyle(color: Colors.grey[500]),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+    return SizedBox(
+      height: 48,
+      child: TextField(
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText: hintText,
+          prefixIcon:
+              const Icon(Icons.search, size: 20, color: AppColors.gray400),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+          // Suffix filter button inside the input decoration so the whole field
+          // uses the theme's InputDecoration (border, fill, radius, etc)
+          suffixIcon: Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: InkWell(
+              onTap: onFilterTap,
+              borderRadius: BorderRadius.circular(17),
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: AppColors.brand500,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.tune, color: Colors.white, size: 18),
               ),
             ),
           ),
-          GestureDetector(
-            onTap: onFilterTap,
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              width: 34,
-              height: 34,
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.tune,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-          ),
-        ],
+          suffixIconConstraints:
+              const BoxConstraints(minHeight: 34, minWidth: 34),
+          hintStyle: const TextStyle(color: AppColors.gray400),
+        ),
       ),
     );
   }
