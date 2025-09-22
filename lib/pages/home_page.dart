@@ -6,6 +6,7 @@ import '../components/search_bar.dart';
 import '../components/bottom_nav_bar.dart';
 import '../models/property.dart';
 import '../models/location.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -153,11 +154,11 @@ class _HomePageState extends State<HomePage> {
           ),
           Row(
             children: [
-              _buildHeaderIcon(Icons.person_outline),
+              _buildHeaderIcon(LucideIcons.user),
               const SizedBox(width: 12),
-              _buildHeaderIcon(Icons.notifications_outlined),
+              _buildHeaderIcon(LucideIcons.bell),
               const SizedBox(width: 12),
-              _buildHeaderIcon(Icons.chat_bubble_outline),
+              _buildHeaderIcon(LucideIcons.messageCircle),
             ],
           ),
         ],
@@ -170,7 +171,8 @@ class _HomePageState extends State<HomePage> {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        border: Border.all(color: const Color(0xFFE5E5E7)),
+        color: const Color(0xFFF8F9FB),
         shape: BoxShape.circle,
       ),
       child: Icon(icon, color: Colors.grey[600], size: 20),
@@ -183,7 +185,7 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 25,
+            radius: 16,
             backgroundColor: Colors.grey[200],
             backgroundImage: const NetworkImage(
               "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100",
@@ -216,21 +218,22 @@ class _HomePageState extends State<HomePage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.purple[50],
+              color: const Color(0xFFF4F3FF),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.purple[200]!),
+              border: Border.all(color: const Color(0xFFD9D6FE)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle, size: 16, color: Colors.purple[600]),
+                Icon(LucideIcons.checkCheck,
+                    size: 12, color: const Color(0xFF7F56D9)),
                 const SizedBox(width: 4),
                 Text(
                   "Free Plan",
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Colors.purple[600],
+                    color: const Color(0xFF7F56D9),
                   ),
                 ),
               ],
