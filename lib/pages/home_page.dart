@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
               _buildCategoriesSection(),
               _buildFeaturedEstatesSection(),
               _buildTopLocationsSection(),
-              _buildSecondFeaturedSection(),
+              _buildAroundEstatesSection(),
               const SizedBox(height: 100), // Space for bottom nav
             ],
           ),
@@ -178,18 +178,18 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Good Morning 👋",
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.grey,
                   ),
                 ),
-                const Text(
+                Text(
                   "Olivia Irwin",
                   style: TextStyle(
                     fontSize: 12,
@@ -366,7 +366,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 80,
+            height: 96,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _topLocations.length,
@@ -385,7 +385,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSecondFeaturedSection() {
+  Widget _buildAroundEstatesSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(

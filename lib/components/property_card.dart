@@ -22,7 +22,7 @@ class PropertyCard extends StatelessWidget {
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: const Color(0xFFF8F9FB),
+            color: const Color.fromARGB(0, 161, 168, 183),
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
