@@ -41,7 +41,7 @@ class AppTheme {
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.brand200))),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: const Color(0xFFF8F9FB),
         elevation: 0,
         shape: RoundedRectangleBorder(

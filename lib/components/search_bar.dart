@@ -5,12 +5,16 @@ class CustomSearchBar extends StatelessWidget {
   final String hintText;
   final VoidCallback? onFilterTap;
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final TextEditingController? controller;
 
   const CustomSearchBar({
     super.key,
-    this.hintText = "Search",
+    this.hintText = 'Search',
     this.onFilterTap,
     this.onChanged,
+    this.onSubmitted,
+    this.controller,
   });
 
   @override
@@ -18,14 +22,15 @@ class CustomSearchBar extends StatelessWidget {
     return SizedBox(
       height: 48,
       child: TextField(
+        controller: controller,
         onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: hintText,
           prefixIcon:
               const Icon(Icons.search, size: 20, color: AppColors.gray400),
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
-          // Suffix filter button inside the input decoration so the whole field
-          // uses the theme's InputDecoration (border, fill, radius, etc)
           suffixIcon: Padding(
             padding: const EdgeInsets.only(right: 6),
             child: InkWell(

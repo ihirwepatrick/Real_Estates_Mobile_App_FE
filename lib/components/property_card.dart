@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import '../models/property.dart';
+import '../theme/app_colors.dart';
 
 class PropertyCard extends StatelessWidget {
   final Property property;
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteTap;
+  final double width;
 
   const PropertyCard({
     super.key,
     required this.property,
     this.onTap,
     this.onFavoriteTap,
+    this.width = 160,
   });
 
   @override
@@ -18,13 +21,9 @@ class PropertyCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 160,
+        width: width,
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color.fromARGB(0, 161, 168, 183),
-            width: 1.5,
-          ),
           borderRadius: BorderRadius.circular(12),
           color: const Color(0xFFF8F9FB),
           boxShadow: [
@@ -39,17 +38,15 @@ class PropertyCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔹 Controllable Image Section
             SizedBox(
-              height:
-                  120, // 🔹 You can change this value to control image height
+              height: 120,
               child: Stack(
                 children: [
                   ClipRRect(
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(12)),
                     child: Container(
-                      height: double.infinity, // Fill the SizedBox height
+                      height: double.infinity,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
@@ -65,7 +62,6 @@ class PropertyCard extends StatelessWidget {
                           : null,
                     ),
                   ),
-                  // Favorite Button
                   Positioned(
                     top: 8,
                     right: 8,
@@ -78,18 +74,11 @@ class PropertyCard extends StatelessWidget {
                             color: property.isFavorite
                                 ? Colors.green
                                 : Colors.grey[300]!,
-                            width: 3,
+                            width: 2,
                           ),
                           color:
                               property.isFavorite ? Colors.green : Colors.white,
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
                         ),
                         child: Icon(
                           Icons.favorite,
@@ -100,7 +89,6 @@ class PropertyCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Property Type Badge
                   Positioned(
                     bottom: 8,
                     left: 8,
@@ -108,7 +96,7 @@ class PropertyCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: AppColors.brand500,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -124,10 +112,7 @@ class PropertyCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            // 🔹 Flexible Details Section
             Expanded(
-              flex: 1,
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -149,22 +134,21 @@ class PropertyCard extends StatelessWidget {
                         const Icon(Icons.star, size: 16, color: Colors.amber),
                         const SizedBox(width: 4),
                         Text(
-                          property.rating.toString(),
+                          property.rating.toStringAsFixed(1),
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         const Icon(Icons.location_on,
-                            size: 16, color: Colors.grey),
-                        const SizedBox(width: 4),
+                            size: 14, color: Colors.grey),
+                        const SizedBox(width: 2),
                         Expanded(
                           child: Text(
-                            property.location,
+                            property.locationLabel,
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 11,
                               color: Colors.grey,
                             ),
                             maxLines: 1,
@@ -173,14 +157,16 @@ class PropertyCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const Spacer(),
                     Text(
-                      property.price,
+                      property.formattedPrice,
                       style: const TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue,
+                        color: AppColors.brand500,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
