@@ -1,52 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../components/password_field.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
-  final _password = TextEditingController();
   bool _busy = false;
 
   @override
   void dispose() {
     _email.dispose();
-    _password.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _busy = true);
+    final email = _email.text.trim();
     final auth = context.read<AuthProvider>();
-    final ok = await auth.login(
-      _email.text.trim(),
-      _password.text,
-    );
+    final ok = await auth.forgotPassword(email);
     setState(() => _busy = false);
     if (!mounted) return;
     if (ok) {
-      context.go('/profile');
-      return;
+      context.push(
+        '/reset-password?email=${Uri.encodeComponent(email)}',
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(auth.error ?? 'Something went wrong')),
+      );
     }
-    if (auth.needsEmailVerification) {
-      final email = auth.pendingEmail ?? _email.text.trim();
-      context.push('/verify-otp?email=${Uri.encodeComponent(email)}&type=signup');
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(auth.error ?? 'Login failed')),
-    );
   }
 
   @override
@@ -54,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Owner login'),
+        title: const Text('Forgot password'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
@@ -67,8 +59,8 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                'Sign in to submit and manage your property listings.',
-                style: TextStyle(color: Colors.grey),
+                'Enter the email on your owner account. We’ll send a 6-digit code so you can set a new password.',
+                style: TextStyle(color: Colors.grey, height: 1.4),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -78,22 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Email is required' : null,
               ),
-              const SizedBox(height: 12),
-              PasswordField(
-                controller: _password,
-                onFieldSubmitted: (_) => _submit(),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => context.push('/forgot-password'),
-                  child: const Text(
-                    'Forgot password?',
-                    style: TextStyle(color: AppColors.brand600),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _busy ? null : _submit,
                 style: ElevatedButton.styleFrom(
@@ -113,14 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Sign in'),
-              ),
-              TextButton(
-                onPressed: () => context.push('/register'),
-                child: const Text(
-                  'Create an owner account',
-                  style: TextStyle(color: AppColors.brand600),
-                ),
+                    : const Text('Send reset code'),
               ),
             ],
           ),

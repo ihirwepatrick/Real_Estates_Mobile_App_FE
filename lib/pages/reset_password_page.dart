@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../components/password_field.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({super.key, required this.email});
+
+  final String email;
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
+  final _code = TextEditingController();
   final _password = TextEditingController();
+  final _confirm = TextEditingController();
   bool _busy = false;
 
   @override
   void dispose() {
-    _email.dispose();
+    _code.dispose();
     _password.dispose();
+    _confirm.dispose();
     super.dispose();
   }
 
@@ -29,24 +34,23 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _busy = true);
     final auth = context.read<AuthProvider>();
-    final ok = await auth.login(
-      _email.text.trim(),
-      _password.text,
+    final ok = await auth.resetPassword(
+      email: widget.email,
+      token: _code.text.trim(),
+      password: _password.text,
     );
     setState(() => _busy = false);
     if (!mounted) return;
     if (ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password updated — you are signed in')),
+      );
       context.go('/profile');
-      return;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(auth.error ?? 'Reset failed')),
+      );
     }
-    if (auth.needsEmailVerification) {
-      final email = auth.pendingEmail ?? _email.text.trim();
-      context.push('/verify-otp?email=${Uri.encodeComponent(email)}&type=signup');
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(auth.error ?? 'Login failed')),
-    );
   }
 
   @override
@@ -54,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Owner login'),
+        title: const Text('Set new password'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
@@ -66,34 +70,39 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Sign in to submit and manage your property listings.',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                'Code sent to ${widget.email}',
+                style: const TextStyle(color: Colors.grey),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               TextFormField(
-                controller: _email,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email'),
+                controller: _code,
+                keyboardType: TextInputType.number,
+                maxLength: 8,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  labelText: '6-digit code',
+                  counterText: '',
+                ),
                 validator: (v) =>
-                    v == null || v.isEmpty ? 'Email is required' : null,
+                    v == null || v.length < 6 ? 'Enter the code' : null,
               ),
               const SizedBox(height: 12),
               PasswordField(
                 controller: _password,
-                onFieldSubmitted: (_) => _submit(),
+                label: 'New password',
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => context.push('/forgot-password'),
-                  child: const Text(
-                    'Forgot password?',
-                    style: TextStyle(color: AppColors.brand600),
-                  ),
-                ),
+              const SizedBox(height: 12),
+              PasswordField(
+                controller: _confirm,
+                label: 'Confirm password',
+                validator: (v) {
+                  if (v == null || v.length < 6) return 'Min 6 characters';
+                  if (v != _password.text) return 'Passwords do not match';
+                  return null;
+                },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _busy ? null : _submit,
                 style: ElevatedButton.styleFrom(
@@ -113,14 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Sign in'),
-              ),
-              TextButton(
-                onPressed: () => context.push('/register'),
-                child: const Text(
-                  'Create an owner account',
-                  style: TextStyle(color: AppColors.brand600),
-                ),
+                    : const Text('Update password'),
               ),
             ],
           ),

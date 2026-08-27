@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../components/auth_bottom_sheet.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 
@@ -76,7 +77,12 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.login,
               title: 'Owner login',
               subtitle: 'Access your listings',
-              onTap: () => context.push('/login'),
+              onTap: () => showAuthRequiredSheet(
+                context,
+                title: 'Welcome back',
+                message:
+                    'Sign in to manage listings, or create an owner account if you’re new.',
+              ),
             ),
             _tile(
               icon: Icons.person_add_alt_1,
@@ -111,6 +117,19 @@ class ProfilePage extends StatelessWidget {
               },
             ),
           ],
+          if (!auth.isLoggedIn)
+            _tile(
+              icon: Icons.add_home_work_outlined,
+              title: 'Register your place',
+              subtitle: 'Requires an owner account',
+              onTap: () => requireAuthThen(
+                context,
+                route: '/submit-listing',
+                title: 'List your property',
+                message:
+                    'Owners sign in once, submit details and photos, then we review before publishing.',
+              ),
+            ),
           const SizedBox(height: 12),
           const Text(
             'Anyone can browse estates. Only property owners need an account to submit listings for admin approval.',

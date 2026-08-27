@@ -11,21 +11,40 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    final res = await _api.dio.post(
-      '/api/auth/login',
-      data: {'email': email, 'password': password},
-    );
-    final user = AppUser.fromJson(res.data['user'] as Map<String, dynamic>);
-    final session = res.data['session'] as Map<String, dynamic>;
-    final token = session['accessToken'] as String;
-    await _api.saveSession(
-      accessToken: token,
-      refreshToken: session['refreshToken'] as String?,
-    );
-    return (user: user, accessToken: token);
+    try {
+      final res = await _api.dio.post(
+        '/api/auth/login',
+        data: {'email': email, 'password': password},
+      );
+      final user = AppUser.fromJson(res.data['user'] as Map<String, dynamic>);
+      final session = res.data['session'] as Map<String, dynamic>;
+      final token = session['accessToken'] as String;
+      await _api.saveSession(
+        accessToken: token,
+        refreshToken: session['refreshToken'] as String?,
+      );
+      return (user: user, accessToken: token);
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      if (data is Map && data['requiresEmailVerification'] == true) {
+        throw EmailVerificationRequiredException(
+          email: data['email']?.toString() ?? email,
+          message: data['error']?.toString() ??
+              'Please verify your email with the code we sent.',
+        );
+      }
+      rethrow;
+    }
   }
 
-  Future<({AppUser? user, String? accessToken, String? message})> register({
+  Future<
+      ({
+        AppUser? user,
+        String? accessToken,
+        bool requiresEmailVerification,
+        String? email,
+        String? message,
+      })> register({
     required String email,
     required String password,
     required String fullName,
@@ -41,29 +60,100 @@ class AuthRepository {
       },
     );
 
+    final requires =
+        res.data['requiresEmailVerification'] == true ||
+        res.data['session'] == null;
     final userJson = res.data['user'] as Map<String, dynamic>?;
     final session = res.data['session'] as Map<String, dynamic>?;
-    if (userJson == null) {
+
+    if (requires) {
+      return (
+        user: userJson != null ? AppUser.fromJson(userJson) : null,
+        accessToken: null,
+        requiresEmailVerification: true,
+        email: (res.data['email'] as String?) ?? email,
+        message: res.data['message'] as String?,
+      );
+    }
+
+    if (userJson == null || session == null || session['accessToken'] == null) {
       throw DioException(
         requestOptions: res.requestOptions,
         message: 'Registration failed',
       );
     }
+
     final user = AppUser.fromJson(userJson);
-    if (session != null && session['accessToken'] != null) {
-      final token = session['accessToken'] as String;
-      await _api.saveSession(
-        accessToken: token,
-        refreshToken: session['refreshToken'] as String?,
-      );
-      return (user: user, accessToken: token, message: null);
-    }
+    final token = session['accessToken'] as String;
+    await _api.saveSession(
+      accessToken: token,
+      refreshToken: session['refreshToken'] as String?,
+    );
     return (
       user: user,
-      accessToken: null,
-      message: res.data['message'] as String? ??
-          'Account created. Please log in.',
+      accessToken: token,
+      requiresEmailVerification: false,
+      email: email,
+      message: null,
     );
+  }
+
+  Future<({AppUser user, String accessToken})> verifyOtp({
+    required String email,
+    required String token,
+    required String type,
+  }) async {
+    final res = await _api.dio.post(
+      '/api/auth/verify-otp',
+      data: {'email': email, 'token': token, 'type': type},
+    );
+    final user = AppUser.fromJson(res.data['user'] as Map<String, dynamic>);
+    final session = res.data['session'] as Map<String, dynamic>;
+    final accessToken = session['accessToken'] as String;
+    await _api.saveSession(
+      accessToken: accessToken,
+      refreshToken: session['refreshToken'] as String?,
+    );
+    return (user: user, accessToken: accessToken);
+  }
+
+  Future<String> resendOtp({
+    required String email,
+    String type = 'signup',
+  }) async {
+    final res = await _api.dio.post(
+      '/api/auth/resend-otp',
+      data: {'email': email, 'type': type},
+    );
+    return res.data['message'] as String? ?? 'Code sent';
+  }
+
+  Future<String> forgotPassword({required String email}) async {
+    final res = await _api.dio.post(
+      '/api/auth/forgot-password',
+      data: {'email': email},
+    );
+    return res.data['message'] as String? ??
+        'If an account exists, a reset code was sent.';
+  }
+
+  Future<({AppUser user, String accessToken})> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+  }) async {
+    final res = await _api.dio.post(
+      '/api/auth/reset-password',
+      data: {'email': email, 'token': token, 'password': password},
+    );
+    final user = AppUser.fromJson(res.data['user'] as Map<String, dynamic>);
+    final session = res.data['session'] as Map<String, dynamic>;
+    final accessToken = session['accessToken'] as String;
+    await _api.saveSession(
+      accessToken: accessToken,
+      refreshToken: session['refreshToken'] as String?,
+    );
+    return (user: user, accessToken: accessToken);
   }
 
   Future<AppUser?> me() async {
@@ -78,4 +168,17 @@ class AuthRepository {
   }
 
   Future<void> logout() => _api.clearSession();
+}
+
+class EmailVerificationRequiredException implements Exception {
+  EmailVerificationRequiredException({
+    required this.email,
+    required this.message,
+  });
+
+  final String email;
+  final String message;
+
+  @override
+  String toString() => message;
 }

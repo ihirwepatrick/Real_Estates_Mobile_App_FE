@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../components/password_field.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 
@@ -42,14 +43,25 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!mounted) return;
     if (ok) {
       context.go('/profile');
-    } else {
-      final err = auth.error ?? 'Registration failed';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
-      if (err.toLowerCase().contains('log in') ||
-          err.toLowerCase().contains('confirm')) {
-        context.push('/login');
-      }
+      return;
     }
+    if (auth.needsEmailVerification) {
+      final email = auth.pendingEmail ?? _email.text.trim();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            auth.error ?? 'Check your email for a 6-digit verification code',
+          ),
+        ),
+      );
+      context.push(
+        '/verify-otp?email=${Uri.encodeComponent(email)}&type=signup',
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(auth.error ?? 'Registration failed')),
+    );
   }
 
   @override
@@ -69,6 +81,11 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Text(
+                'You’ll confirm your email with a 6-digit code before listing.',
+                style: TextStyle(color: Colors.grey, height: 1.4),
+              ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _name,
                 decoration: const InputDecoration(labelText: 'Full name'),
@@ -93,13 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     v == null || v.isEmpty ? 'Email is required' : null,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _password,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-                validator: (v) =>
-                    v == null || v.length < 6 ? 'Min 6 characters' : null,
-              ),
+              PasswordField(controller: _password),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _busy ? null : _submit,
@@ -121,6 +132,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       )
                     : const Text('Create account'),
+              ),
+              TextButton(
+                onPressed: () => context.push('/login'),
+                child: const Text(
+                  'Already have an account? Sign in',
+                  style: TextStyle(color: AppColors.brand600),
+                ),
               ),
             ],
           ),
